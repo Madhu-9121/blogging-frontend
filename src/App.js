@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState,useEffect } from 'react';
+import Home from './components/home';
+import Validate from './components/validate';
+import { SnackbarProvider } from 'notistack';
+import { useSnackbar } from 'notistack';
+const App = () => {
+  const [userToken, setUserToken] = useState(null);
+  const {enqueueSnackbar} = useSnackbar()
+  const handleLogout = () => {
+    enqueueSnackbar("Logged Out Successfully", { variant: "warning" });
+    setUserToken(null);
+    localStorage.clear()
+  };
+  useEffect(() => {
+    // Check if a user token is present in localStorage
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setUserToken(storedToken);
+    }
+  }, []); 
+  
 
-function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <SnackbarProvider>
+    <div>
+      {userToken ? (
+        <Home user={userToken} onLogout={handleLogout} />
+      ) : (
+        <>
+        <Validate setUserToken={setUserToken}/>  
+        </>
+      )}
     </div>
+    </SnackbarProvider>
   );
-}
+};
 
 export default App;
